@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduRide - Hijau Kampus</title>
+    <style>
+        body {font-family: Arial, sans-serif;background-color: #e6f4ea;color: #1b5e20;margin: 0;padding: 0;}
+        header {background-color: #2e7d32;color: white;text-align: center;padding: 1.2em;}
+        nav {display: flex;justify-content: center;gap: 1em;background-color: #388e3c;padding: 0.5em;}
+        nav a {color: white;text-decoration: none;font-weight: bold;}
+        nav a:hover {text-decoration: underline;}
+        section {padding: 1.5em;}
+        .btn {background-color: #43a047;color: white;border: none;padding: 0.7em 1.2em;border-radius: 5px;cursor: pointer;}
+        .btn:hover {background-color: #2e7d32;}
+        .driver-card {background-color: white;border-radius: 10px;box-shadow: 0 2px 6px rgba(0,0,0,0.1);padding: 1em;margin: 1em 0;}
+        .chat-box, .rating-box {background-color: white;padding: 1em;border-radius: 10px;box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+        input, select, textarea {width: 100%;padding: 0.5em;margin-top: 0.5em;border-radius: 5px;border: 1px solid #c8e6c9;}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>EduRide</h1>
+        <p>Solusi Transportasi Hijau Kampus</p>
+    </header>
+    <nav>
+        <a href="#home">Beranda</a>
+        <a href="#pesan">Pesan</a>
+        <a href="#driver">Driver</a>
+        <a href="#chat">Chat</a>
+        <a href="#pembayaran">Pembayaran</a>
+        <a href="#rating">Rating</a>
+    </nav>
+
+    <section id="home">
+        <h2>Selamat Datang di EduRide</h2>
+        <p>EduRide adalah layanan transportasi ramah lingkungan yang menghubungkan sesama mahasiswa dalam satu kampus. Cepat, aman, dan hemat!</p>
+        <button class="btn" onclick="goToPesan()">Pesan Sekarang</button>
+    </section>
+
+    <section id="pesan">
+        <h2>Form Pemesanan</h2>
+        <form id="formPesan">
+            <label>Nama Customer:</label>
+            <input type="text" id="namaCustomer" required>
+            <label>Pilih Layanan:</label>
+            <select id="layanan">
+                <option value="Driver">Driver</option>
+                <option value="Delivery">Delivery</option>
+            </select>
+            <label>Lokasi Asal:</label>
+            <input type="text" id="asal" required>
+            <label>Tujuan:</label>
+            <input type="text" id="tujuan" required>
+            <button type="button" class="btn" onclick="cariDriver()">Cari Driver Terdekat</button>
+        </form>
+        <div id="hasilDriver"></div>
+    </section>
+
+    <section id="driver">
+        <h2>Daftar Driver</h2>
+        <div class="driver-card"><strong>Faiq</strong> - FKIP<br>Status: <span id="statusFaiq">Tersedia</span><br><button class="btn" onclick="pesanDriver('Faiq')">Pesan</button></div>
+        <div class="driver-card"><strong>Nadila</strong> - FKIP<br>Status: <span id="statusNadila">Tersedia</span><br><button class="btn" onclick="pesanDriver('Nadila')">Pesan</button></div>
+        <div class="driver-card"><strong>Nuzil</strong> - FKIP<br>Status: <span id="statusNuzil">Sibuk</span><br><button class="btn" disabled>Penuh</button></div>
+    </section>
+
+    <section id="chat">
+        <h2>Chat Internal</h2>
+        <div class="chat-box">
+            <div id="chatArea"></div>
+            <input type="text" id="pesanChat" placeholder="Ketik pesan...">
+            <button class="btn" onclick="kirimChat()">Kirim</button>
+        </div>
+    </section>
+
+    <section id="pembayaran">
+        <h2>Pembayaran</h2>
+        <select id="metode">
+            <option value="Tunai">Tunai</option>
+            <option value="QRIS">QRIS</option>
+            <option value="Transfer">Transfer</option>
+        </select>
+        <div id="qris" style="display:none; margin-top:1em;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/QRIS_logo.png" width="150" alt="QRIS">
+            <p>Scan QRIS untuk membayar.</p>
+        </div>
+    </section>
+
+    <section id="rating">
+        <h2>Beri Rating & Review</h2>
+        <div class="rating-box">
+            <label>Rating:</label>
+            <select id="nilaiRating">
+                <option value="5">⭐⭐⭐⭐⭐</option>
+                <option value="4">⭐⭐⭐⭐</option>
+                <option value="3">⭐⭐⭐</option>
+                <option value="2">⭐⭐</option>
+                <option value="1">⭐</option>
+            </select>
+            <label>Review:</label>
+            <textarea id="reviewText" rows="3" placeholder="Tulis pengalaman Anda..."></textarea>
+            <button class="btn" onclick="kirimReview()">Kirim</button>
+            <div id="daftarReview" style="margin-top:1em;"></div>
+        </div>
+    </section>
+
+    <script>
+        function goToPesan() {location.href = '#pesan';}
+        function cariDriver() {
+            const hasil = document.getElementById('hasilDriver');
+            hasil.innerHTML = '<p>Driver terdekat ditemukan: <strong>Faiq (3 menit)</strong></p>';
+        }
+        function pesanDriver(nama) {
+            alert('Kamu memesan driver ' + nama);
+            document.getElementById('status' + nama).innerText = 'Sibuk';
+            localStorage.setItem('driver', nama);
+        }
+        function kirimChat() {
+            const pesan = document.getElementById('pesanChat').value;
+            if (pesan.trim() !== '') {
+                const chatArea = document.getElementById('chatArea');
+                chatArea.innerHTML += `<p><strong>Kamu:</strong> ${pesan}</p>`;
+                document.getElementById('pesanChat').value = '';
+                localStorage.setItem('chat', chatArea.innerHTML);
+            }
+        }
+        window.onload = function() {
+            const chat = localStorage.getItem('chat');
+            if (chat) document.getElementById('chatArea').innerHTML = chat;
+        }
+        document.getElementById('metode').addEventListener('change', function() {
+            const metode = this.value;
+            document.getElementById('qris').style.display = (metode === 'QRIS') ? 'block' : 'none';
+        });
+        function kirimReview() {
+            const rating = document.getElementById('nilaiRating').value;
+            const review = document.getElementById('reviewText').value;
+            if (review.trim() === '') return alert('Isi review terlebih dahulu');
+            const daftar = document.getElementById('daftarReview');
+            const item = `<p>${'⭐'.repeat(rating)} - ${review}</p>`;
+            daftar.innerHTML += item;
+            document.getElementById('reviewText').value = '';
+        }
+    </script>
+</body>
+</html>
